@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing dependencies...
+      - apt-get update -y
+      - apt-get install -y awscli docker.io
+  build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 992382509921.dkr.ecr.ap-south-1.amazonaws.com
+      - echo Building the Docker image...
+      - docker build -t flask-app .
+      - docker tag flask-app:latest 992382509921.dkr.ecr.ap-south-1.amazonaws.com/flask-app-repo:latest
+      - echo Pushing the Docker image to Amazon ECR...
+      - docker push 992382509921.dkr.ecr.ap-south-1.amazonaws.com/flask-app-repo:latest
+
+artifacts:
+  files:
+    - '**/*'
